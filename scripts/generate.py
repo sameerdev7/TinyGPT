@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Text generation script using trained Transformer checkpoints.
 
@@ -28,14 +27,20 @@ Usage:
         --temperature 0.9
 """
 
-import argparse
+#!/usr/bin/env python3
+"""
+Text generation script...
+"""
+
 import sys
 from pathlib import Path
-from typing import Optional, List
+sys.path.append(str(Path(__file__).parent.parent))  # ← THIS LINE FIXES IT
 
+import argparse
+# ... rest of your imports
+from typing import Optional, List
 import torch
 import torch.nn.functional as F
-
 from tokenization.bpe_trainer import load_tokenizer
 from tokenization.tokenizer import Tokenizer
 from models.language_model import TransformerLM
@@ -87,16 +92,24 @@ class TextGenerator:
         self.tokenizer = Tokenizer(vocab, merges)
         print(f"Loaded tokenizer with vocab size: {len(vocab)}")
 
-        # Initialize model
-        print("Initializing model...")
+        # Initialize model using config from checkpoint
+        print("Initializing model from checkpoint config...")
+        full_config = checkpoint.get('config', {})
+        if not full_config:
+            raise ValueError("Checkpoint does not contain config! Cannot initialize model.")
+
+        model_config = full_config['model']  # ← This is the key fix!
+
+        print(f"Model config: {model_config}")
+
         self.model = TransformerLM(
-            vocab_size=self.config.get('vocab_size', len(vocab)),
-            context_length=self.config.get('context_length', 256),
-            d_model=self.config.get('d_model', 512),
-            num_layers=self.config.get('num_layers', 4),
-            num_heads=self.config.get('num_heads', 16),
-            d_ff=self.config.get('d_ff', 1344),
-            rope_theta=self.config.get('rope_theta', 10000.0),
+            vocab_size=model_config['vocab_size'],
+            context_length=model_config['context_length'],
+            d_model=model_config['d_model'],
+            num_layers=model_config['num_layers'],
+            num_heads=model_config['num_heads'],
+            d_ff=model_config['d_ff'],
+            rope_theta=model_config['rope_theta'],
             device=self.device,
         ).to(self.device)
 
@@ -420,3 +433,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

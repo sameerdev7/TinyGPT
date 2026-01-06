@@ -1,0 +1,8 @@
+uv run scripts/generate.py \                      7s py TransformerLM
+    --checkpoint checkpoints/checkpoint_final.pt \
+    --tokenizer-dir data/tokenizer \
+    --prompt "Once upon a time, there was a cheerful little rabbit named Hopper who" \
+    --max-tokens 600 \
+    --temperature 0.85 \
+    --top-k 50
+
