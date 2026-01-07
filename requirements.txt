@@ -10,3 +10,7 @@ tqdm
 psutil 
 
 matplotlib
+
+wandb
+scipy 
+scikit-learn

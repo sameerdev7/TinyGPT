@@ -74,7 +74,12 @@ class TextGenerator:
 
         # Load checkpoint
         print(f"Loading checkpoint from {checkpoint_path}...")
-        checkpoint = torch.load(checkpoint_path, map_location=self.device)
+        checkpoint = torch.load(
+                checkpoint_path,
+                map_location=device,
+                weights_only=False
+        )
+
         self.config = checkpoint.get('config', {})
 
         # Load tokenizer
